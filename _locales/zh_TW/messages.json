@@ -347,11 +347,10 @@
     "notifications_error": { "message": "因為某些問題導致無法載入部分通知。" },
     "tweet_error": { "message": "因為某些問題導致無法載入部分推文。" },
     "error_instructions": {
-        "message": "請複製以下文字然後傳到 $AT1$issue tracker$AT2$ 或 $AT3$我的信箱$AT2$。謝謝！",
+        "message": "請複製以下文字然後傳到 $AT1$issue tracker$AT2$。謝謝！",
         "placeholders": {
             "at1": { "content": "<a target='_blank' href='https://github.com/dimdenGD/OldTwitter/issues'>" },
-            "at2": { "content": "</a>" },
-            "at3": { "content": "<a target='_blank' href='mailto:admin@dimden.dev'>" }
+            "at2": { "content": "</a>" }
         }
     },
     "initialization": { "message": "初始化中" },

@@ -1166,16 +1166,13 @@
       "message": "오류가 발생했기 때문에 일부 트윗을 가져올 수 없었습니다"
     },
     "error_instructions": {
-      "message": "$AT1$깃허브 이슈 트래커$AT2$나 $AT3$저의 메일$AT2$로 아래 텍스트를 복사해서 보내주세요. 잘 부탁드립니다!",
+      "message": "$AT1$깃허브 이슈 트래커$AT2$로 아래 텍스트를 복사해서 보내주세요. 잘 부탁드립니다!",
       "placeholders": {
         "at1": {
           "content": "<a target='_blank' href='https://github.com/dimdenGD/OldTwitter/issues'>"
         },
         "at2": {
           "content": "</a>"
-        },
-        "at3": {
-          "content": "<a target='_blank' href='mailto:admin@dimden.dev'>"
         }
       }
     },
