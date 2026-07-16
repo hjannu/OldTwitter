@@ -3,6 +3,7 @@ let loadingReplies = {};
 let loadingLikers = {};
 let tweetStorage = {};
 let userStorage = {};
+let aboutStorage = {};
 let hashflagStorage = {};
 let translateLimit = 0;
 let loadingNotifs;
@@ -33,6 +34,14 @@ setInterval(() => {
             Date.now() - userStorage[i].cacheDate > 60000 * 15
         ) {
             delete userStorage[i];
+        }
+    }
+    for (let i in aboutStorage) {
+        if (
+            aboutStorage[i].cacheDate &&
+            Date.now() - aboutStorage[i].cacheDate > 60000 * 15
+        ) {
+            delete aboutStorage[i];
         }
     }
 }, 60000 * 10);
@@ -4497,7 +4506,17 @@ const API = {
             });
         },
         getAbout: (name) => {
-            return new Promise((resolve, reject) => {
+            let key = String(name).toLowerCase();
+            if (aboutStorage[key]) {
+                if (aboutStorage[key].promise) return aboutStorage[key].promise;
+                if (
+                    aboutStorage[key].cacheDate &&
+                    Date.now() - aboutStorage[key].cacheDate < 60000 * 15
+                ) {
+                    return Promise.resolve(aboutStorage[key].data);
+                }
+            }
+            let promise = new Promise((resolve, reject) => {
                 fetch(
                     `/i/api/graphql/XRqGa7EeokUU5kppkh13EA/AboutAccountQuery?variables=${encodeURIComponent(JSON.stringify({ screenName: name }))}`,
                     {
@@ -4519,18 +4538,28 @@ const API = {
                     .then((data) => {
                         debugLog("user.getAbout", "start", { name, data });
                         if (data.errors && data.errors[0]) {
+                            delete aboutStorage[key];
                             return reject(data.errors[0].message);
                         }
 
                         let result = data.data.user_result_by_screen_name.result;
+                        let about = result.about_profile;
 
-                        debugLog("user.getAbout", "end", result.about_profile);
-                        resolve(result.about_profile);
+                        aboutStorage[key] = {
+                            data: about,
+                            cacheDate: Date.now(),
+                        };
+
+                        debugLog("user.getAbout", "end", about);
+                        resolve(about);
                     })
                     .catch((e) => {
+                        delete aboutStorage[key];
                         reject(e);
                     });
             });
+            aboutStorage[key] = { promise };
+            return promise;
         },
     },
     tweet: {

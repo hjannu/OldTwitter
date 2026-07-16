@@ -2536,6 +2536,23 @@ let userDataFunction = async user => {
                 if(!url.href.startsWith('/')) url.target = "_blank";
                 additionalInfoElement.prepend(url);
             }
+            if(vars.showBasedIn) {
+                API.user.getAbout(user.screen_name).then(about => {
+                    if(stopLoad || !about?.account_based_in || !userPreview.isConnected) return;
+                    if(additionalInfoElement.querySelector('.profile-additional-based-in')) return;
+                    let country = about.account_based_in;
+                    let flag = getCountryFlag(country);
+                    let countryDisplay = flag ? `${flag} ${country}` : country;
+                    if(!about.location_accurate) countryDisplay += ` ${LOC.based_in_vpn.message}`;
+                    let basedIn = document.createElement('span');
+                    basedIn.classList.add('profile-additional-thing', 'profile-additional-based-in');
+                    basedIn.innerText = `${LOC.based_in.message} ${countryDisplay}`;
+                    let joined = additionalInfoElement.querySelector('.profile-additional-joined');
+                    if(joined) additionalInfoElement.insertBefore(basedIn, joined);
+                    else additionalInfoElement.appendChild(basedIn);
+                    if(vars.enableTwemoji) twemoji.parse(basedIn);
+                }).catch(() => {});
+            }
             div.addEventListener('mouseleave', leaveFunction);
             let links = Array.from(div.querySelector('.preview-user-description').querySelectorAll('a'));
             links.forEach(link => {
