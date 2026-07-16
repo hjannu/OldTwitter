@@ -173,51 +173,56 @@ async function handleFiles(files, mediaArray, mediaContainer, is_dm = false) {
     }
     // get base64 data
     let media = [...images, ...videos, ...gifs];
-    let base64Data = [];
+    let base64Data = await Promise.all(
+        media.map(
+            (file) =>
+                new Promise((resolve, reject) => {
+                    let reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(reader.error);
+                    reader.readAsArrayBuffer(file);
+                })
+        )
+    );
+    while (mediaArray.length >= 4) {
+        mediaArray.pop();
+        mediaContainer.lastChild.remove();
+    }
     for (let i = 0; i < media.length; i++) {
         let file = media[i];
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onload = () => {
-            base64Data.push(reader.result);
-            if (base64Data.length === media.length) {
-                while (mediaArray.length >= 4) {
-                    mediaArray.pop();
-                    mediaContainer.lastChild.remove();
-                }
-                base64Data.forEach((data) => {
-                    let div = document.createElement("div");
-                    let img = document.createElement("img");
-                    div.title = file.name;
-                    div.id =
-                        `new-tweet-media-img-${Date.now()}${Math.random()}`.replace(
-                            ".",
-                            "-"
-                        );
-                    div.className = "new-tweet-media-img-div";
-                    img.className = "new-tweet-media-img";
-                    let progress = document.createElement("span");
-                    progress.hidden = true;
-                    progress.className = "new-tweet-media-img-progress";
-                    let remove = document.createElement("span");
-                    remove.className = "new-tweet-media-img-remove";
-                    let alt;
-                    if (!file.type.includes("video")) {
-                        alt = document.createElement("span");
-                        alt.className = "new-tweet-media-img-alt";
-                        alt.innerText = "ALT";
-                        alt.addEventListener("click", () => {
-                            mediaObject.alt = prompt(
-                                LOC.alt_text.message,
-                                mediaObject.alt || ""
-                            );
-                        });
-                    }
-                    let cw = document.createElement("span");
-                    cw.className = "new-tweet-media-img-cw";
-                    cw.innerText = "CW";
-                    cw.addEventListener("click", () => {
-                        createModal(`
+        let data = base64Data[i];
+        let div = document.createElement("div");
+        let img = document.createElement("img");
+        div.title = file.name;
+        div.id =
+            `new-tweet-media-img-${Date.now()}${Math.random()}`.replace(
+                ".",
+                "-"
+            );
+        div.className = "new-tweet-media-img-div";
+        img.className = "new-tweet-media-img";
+        let progress = document.createElement("span");
+        progress.hidden = true;
+        progress.className = "new-tweet-media-img-progress";
+        let remove = document.createElement("span");
+        remove.className = "new-tweet-media-img-remove";
+        let alt;
+        if (!file.type.includes("video")) {
+            alt = document.createElement("span");
+            alt.className = "new-tweet-media-img-alt";
+            alt.innerText = "ALT";
+            alt.addEventListener("click", () => {
+                mediaObject.alt = prompt(
+                    LOC.alt_text.message,
+                    mediaObject.alt || ""
+                );
+            });
+        }
+        let cw = document.createElement("span");
+        cw.className = "new-tweet-media-img-cw";
+        cw.innerText = "CW";
+        cw.addEventListener("click", () => {
+            createModal(`
                             <div class="cw-modal" style="color:var(--almost-black)">
                                 <h2 class="nice-header">${
                                     LOC.content_warnings.message
@@ -228,116 +233,110 @@ async function handleFiles(files, mediaArray, mediaContainer, is_dm = false) {
                                         ? " checked"
                                         : ""
                                 }> <label for="cw-modal-graphic_violence">${
-                            LOC.graphic_violence.message
-                        }</label><br>
+                LOC.graphic_violence.message
+            }</label><br>
                                 <input type="checkbox" id="cw-modal-adult_content"${
                                     mediaObject.cw.includes("adult_content")
                                         ? " checked"
                                         : ""
                                 }> <label for="cw-modal-adult_content">${
-                            LOC.adult_content.message
-                        }</label><br>
+                LOC.adult_content.message
+            }</label><br>
                                 <input type="checkbox" id="cw-modal-other"${
                                     mediaObject.cw.includes("other")
                                         ? " checked"
                                         : ""
                                 }> <label for="cw-modal-other">${
-                            LOC.sensitive_content.message
-                        }</label><br>
+                LOC.sensitive_content.message
+            }</label><br>
                             </div>
                         `);
-                        let graphic_violence = document.getElementById(
-                            "cw-modal-graphic_violence"
-                        );
-                        let adult_content = document.getElementById(
-                            "cw-modal-adult_content"
-                        );
-                        let sensitive_content =
-                            document.getElementById("cw-modal-other");
-                        [
-                            graphic_violence,
-                            adult_content,
-                            sensitive_content,
-                        ].forEach((checkbox) => {
-                            checkbox.addEventListener("change", () => {
-                                if (checkbox.checked) {
-                                    mediaObject.cw.push(checkbox.id.slice(9));
-                                } else {
-                                    let index = mediaObject.cw.indexOf(
-                                        checkbox.id.slice(9)
-                                    );
-                                    if (index > -1) {
-                                        mediaObject.cw.splice(index, 1);
-                                    }
-                                }
-                            });
-                        });
-                    });
-
-                    let mediaObject = {
-                        div,
-                        img,
-                        id: div.id,
-                        data: data,
-                        type: file.type,
-                        cw: [],
-                        category: file.type.includes("gif")
-                            ? is_dm
-                                ? "dm_gif"
-                                : "tweet_gif"
-                            : file.type.includes("video")
-                            ? is_dm
-                                ? "dm_video"
-                                : "tweet_video"
-                            : is_dm
-                            ? "dm_image"
-                            : "tweet_image",
-                    };
-                    mediaArray.push(mediaObject);
-                    if (file.type.includes("video")) {
-                        img.src =
-                            "data:image/png;base64,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";
+            let graphic_violence = document.getElementById(
+                "cw-modal-graphic_violence"
+            );
+            let adult_content = document.getElementById(
+                "cw-modal-adult_content"
+            );
+            let sensitive_content =
+                document.getElementById("cw-modal-other");
+            [
+                graphic_violence,
+                adult_content,
+                sensitive_content,
+            ].forEach((checkbox) => {
+                checkbox.addEventListener("change", () => {
+                    if (checkbox.checked) {
+                        mediaObject.cw.push(checkbox.id.slice(9));
                     } else {
-                        let dataBase64 = arrayBufferToBase64(data);
-                        img.src = `data:${file.type};base64,${dataBase64}`;
-                    }
-                    remove.addEventListener("click", () => {
-                        div.remove();
-                        for (let i = mediaArray.length - 1; i >= 0; i--) {
-                            let m = mediaArray[i];
-                            if (m.id === div.id) mediaArray.splice(i, 1);
+                        let index = mediaObject.cw.indexOf(
+                            checkbox.id.slice(9)
+                        );
+                        if (index > -1) {
+                            mediaObject.cw.splice(index, 1);
                         }
-                    });
-                    div.append(img, progress, remove);
-                    if (!file.type.includes("video")) {
-                        img.addEventListener("click", () => {
-                            new Viewer(mediaContainer, {
-                                transition: false,
-                                zoomRatio: 0.3,
-                            });
-                        });
-                        div.append(alt);
-                    } else {
-                        cw.style.marginLeft = "-53px";
                     }
-                    div.append(cw);
-                    mediaContainer.append(div);
                 });
+            });
+        });
 
-                setTimeout(() => {
-                    let messageModalElement =
-                        document.getElementsByClassName(
-                            "messages-container"
-                        )[0];
-                    let inboxModalElement =
-                        document.getElementsByClassName("inbox-modal")[0];
-                    if (messageModalElement)
-                        inboxModalElement.scrollTop =
-                            inboxModalElement.scrollHeight;
-                }, 10);
-            }
+        let mediaObject = {
+            div,
+            img,
+            id: div.id,
+            data: data,
+            type: file.type,
+            cw: [],
+            category: file.type.includes("gif")
+                ? is_dm
+                    ? "dm_gif"
+                    : "tweet_gif"
+                : file.type.includes("video")
+                ? is_dm
+                    ? "dm_video"
+                    : "tweet_video"
+                : is_dm
+                ? "dm_image"
+                : "tweet_image",
         };
+        mediaArray.push(mediaObject);
+        if (file.type.includes("video")) {
+            img.src =
+                "data:image/png;base64,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";
+        } else {
+            let dataBase64 = arrayBufferToBase64(data);
+            img.src = `data:${file.type};base64,${dataBase64}`;
+        }
+        remove.addEventListener("click", () => {
+            div.remove();
+            for (let j = mediaArray.length - 1; j >= 0; j--) {
+                let m = mediaArray[j];
+                if (m.id === div.id) mediaArray.splice(j, 1);
+            }
+        });
+        div.append(img, progress, remove);
+        if (!file.type.includes("video")) {
+            img.addEventListener("click", () => {
+                new Viewer(mediaContainer, {
+                    transition: false,
+                    zoomRatio: 0.3,
+                });
+            });
+            div.append(alt);
+        } else {
+            cw.style.marginLeft = "-53px";
+        }
+        div.append(cw);
+        mediaContainer.append(div);
     }
+
+    setTimeout(() => {
+        let messageModalElement =
+            document.getElementsByClassName("messages-container")[0];
+        let inboxModalElement =
+            document.getElementsByClassName("inbox-modal")[0];
+        if (messageModalElement)
+            inboxModalElement.scrollTop = inboxModalElement.scrollHeight;
+    }, 10);
 }
 let isURL = (str) => {
     try {
