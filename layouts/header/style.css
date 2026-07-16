@@ -635,6 +635,9 @@ input, textarea {
     min-width: 130px;
     margin-left: -24px;
 }
+#navbar-user-menu-newtwitter {
+    display: none;
+}
 #navbar-user-menu hr {
     border-bottom: 1px solid var(--border);
     margin: 3px 0;
@@ -3321,6 +3324,12 @@ video::-internal-media-controls-overlay-cast-button {
     .body-old-ui #navbar-user-menu-accounts:before {
         content: "\f056";
     }
+    #navbar-user-menu-newtwitter {
+        display: block;
+    }
+    #navbar-user-menu-newtwitter:before {
+        content: "\f179";
+    }
     #navbar-user-menu-links{
         display:flex;
         flex-direction:column;
@@ -3351,6 +3360,9 @@ video::-internal-media-controls-overlay-cast-button {
     }
     #navbar-user-menu-links>#navbar-user-menu-accounts{
         order: 10;
+    }
+    #navbar-user-menu-links>#navbar-user-menu-newtwitter{
+        order: 11;
     }
 }
 @media screen and (max-width: 460px) {

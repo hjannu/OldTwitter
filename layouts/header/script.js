@@ -3133,23 +3133,24 @@ setInterval(() => {
         }
         let about_left = document.getElementById('about-left');
         let about_right = document.getElementById('about-right');
+        let menuNewTwitter = document.getElementById('navbar-user-menu-newtwitter');
+        function getNewTwitterHref() {
+            let hrefUrl = new URL(location.href);
+            hrefUrl.searchParams.set('newtwitter', 'true');
+            return hrefUrl.toString();
+        }
+        if(menuNewTwitter) {
+            menuNewTwitter.href = getNewTwitterHref();
+            menuNewTwitter.addEventListener('click', e => {
+                e.stopImmediatePropagation();
+            });
+        }
         if(about_left && about_right && !location.pathname.startsWith('/old/') && !location.pathname.startsWith('/i/timeline')) {
             let a = document.createElement('a');
             let a2 = document.createElement('a');
-            let hrefUrl = new URL(location.href);
-            let searchParams = new URLSearchParams(hrefUrl.search);
-            searchParams.set('newtwitter', 'true');
-            hrefUrl.search = searchParams.toString();
-            a.href = hrefUrl.toString();
-            a2.href = hrefUrl.toString();
-            setInterval(() => {
-                let hrefUrl = new URL(location.href);
-                let searchParams = new URLSearchParams(hrefUrl.search);
-                searchParams.set('newtwitter', 'true');
-                hrefUrl.search = searchParams.toString();
-                a.href = hrefUrl.toString();
-                a2.href = hrefUrl.toString();
-            }, 500);
+            let href = getNewTwitterHref();
+            a.href = href;
+            a2.href = href;
             a.className = "open-new-twitter";
             a.innerText = `[${LOC.open_newtwitter.message}]`;
             a.addEventListener('click', e => {
@@ -3162,6 +3163,16 @@ setInterval(() => {
             });
             about_left.appendChild(a);
             about_right.appendChild(a2);
+            setInterval(() => {
+                let href = getNewTwitterHref();
+                a.href = href;
+                a2.href = href;
+                if(menuNewTwitter) menuNewTwitter.href = href;
+            }, 500);
+        } else if(menuNewTwitter) {
+            setInterval(() => {
+                menuNewTwitter.href = getNewTwitterHref();
+            }, 500);
         }
         if(Math.random() > 0.99) {
             document.getElementById('donate-button').innerHTML += ' <span style="vertical-align: middle;">🥺</span>';
