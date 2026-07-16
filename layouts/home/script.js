@@ -81,6 +81,7 @@ setTimeout(() => {
                     <h2 style="margin:0;margin-bottom:10px;color:var(--darker-gray);font-weight:300">(OldTwitter) ${LOC.new_version.message} - ${chrome.runtime.getManifest().version}</h2>
                     <span id="changelog" style="font-size:14px;color:var(--default-text-color)">
                         <ul>
+                            <li>Added GIF picker.</li>
                             <li>Fixed DMs not loading again.</li>
                             <li>Fixed tweet page often giving "Solver timed out" error.</li>
                             <li>Fixed clicking on quote tweet and then back sending you to the quote instead of the quoted tweet.</li>
