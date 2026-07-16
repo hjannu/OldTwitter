@@ -1909,22 +1909,24 @@ async function renderTimeline(append = false, sliceAmount = 0) {
     if(subpage === 'media' && vars.newGallery) {
         for(let i in data) {
             let t = data[i];
-            let firstMedia = t?.extended_entities?.media?.[0];
-            if(!firstMedia) continue;
-            let mediaUrl = firstMedia.media_url_https;
-            let el = document.createElement('div');
-            el.classList.add('profile-media-item');
-            el.innerHTML = html`
-                <a href="/${pageUser.screen_name}/status/${t.id_str}" target="_blank">
-                    <img src="${mediaUrl}" alt="${escapeHTML(firstMedia.ext_alt_text)}">
-                </a>
-            `;
-            let a = el.getElementsByTagName('a')[0];
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                new TweetViewer(user, t);
-            });
-            timelineContainer.appendChild(el);
+            let mediaList = t?.extended_entities?.media;
+            if(!mediaList?.length) continue;
+            for(let j in mediaList) {
+                let media = mediaList[j];
+                let el = document.createElement('div');
+                el.classList.add('profile-media-item');
+                el.innerHTML = html`
+                    <a href="/${pageUser.screen_name}/status/${t.id_str}" target="_blank">
+                        <img src="${media.media_url_https}" alt="${escapeHTML(media.ext_alt_text)}">
+                    </a>
+                `;
+                let a = el.getElementsByTagName('a')[0];
+                a.addEventListener('click', e => {
+                    e.preventDefault();
+                    new TweetViewer(user, t);
+                });
+                timelineContainer.appendChild(el);
+            }
         }
     } else {
         if(pinnedTweet && subpage === "profile" && !append) await appendTweet(pinnedTweet, timelineContainer, {
