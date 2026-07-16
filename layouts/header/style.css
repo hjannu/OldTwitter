@@ -2600,6 +2600,38 @@ video::-internal-media-controls-overlay-cast-button {
     }
     #new-tweet {
         border-radius: 0;
+        overflow-x: clip;
+    }
+    #new-tweet-media-cc,
+    .navbar-new-tweet-media-cc,
+    .new-tweet-media-cc {
+        display: block;
+        left: 0;
+        position: relative;
+        margin: 6px 0 4px 40px;
+        max-width: calc(100% - 48px);
+    }
+    #new-tweet-media-c,
+    .navbar-new-tweet-media-c,
+    .new-tweet-media-c {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        width: auto;
+        margin: 0;
+    }
+    #new-tweet-button,
+    .navbar-new-tweet-button,
+    .new-tweet-button {
+        float: right;
+        left: 0 !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        position: relative;
+    }
+    .new-tweet-media-img {
+        max-width: 64px;
+        max-height: 64px;
     }
     .tweet-media-element {
         max-width: calc(100% - 15px);
@@ -2650,8 +2682,11 @@ video::-internal-media-controls-overlay-cast-button {
         padding-left: 0;
         padding-right: 0;
     }
-    .new-tweet-view, .new-tweet-container {
+    .modal .new-tweet-view, .new-tweet-container {
         width: 100%;
+    }
+    .modal .new-tweet-view {
+        overflow-x: clip;
     }
     .modal .new-tweet-text {
         width: calc(100% - 100px);
@@ -2781,6 +2816,7 @@ video::-internal-media-controls-overlay-cast-button {
     }
     .navbar-new-tweet {
         width: calc(100% - 10px);
+        overflow-x: clip;
     }
     .navbar-new-tweet-text {
         width: calc(100% - 98px);

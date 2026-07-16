@@ -1003,4 +1003,22 @@ a:not(.tweet-header-info):not(.tweet-body-quote):hover,
         white-space: pre !important;
         text-overflow: ellipsis;
     }
+    #new-tweet {
+        overflow-x: clip;
+    }
+    #new-tweet-media-cc {
+        display: block;
+        left: 0;
+        margin: 6px 0 4px 40px;
+        max-width: calc(100% - 48px);
+    }
+    #new-tweet-media-c {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    #new-tweet-button {
+        left: 0 !important;
+        margin-right: 0 !important;
+    }
 }

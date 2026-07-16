@@ -643,7 +643,11 @@ class TweetViewer {
                 </div>
                 <button
                     class="new-tweet-button nice-button"
-                    style="margin-right: -32px;"
+                    style="margin-right: ${
+                        typeof window !== "undefined" && window.innerWidth <= 590
+                            ? "0"
+                            : "-32px"
+                    };"
                 >
                     ${LOC.tweet.message}
                 </button>
@@ -702,7 +706,9 @@ class TweetViewer {
                 this.users[u.id_str] = u;
             }
             document.getElementsByClassName("new-tweet-button")[0].style =
-                "margin-right: -50px;";
+                window.innerWidth <= 590
+                    ? "margin-right: 0;"
+                    : "margin-right: -50px;";
             document
                 .getElementsByClassName("new-tweet-mentions")[0]
                 .addEventListener("click", async () => {
@@ -798,6 +804,8 @@ class TweetViewer {
         let mediaObserver = new MutationObserver(async () => {
             if (mediaList.children.length > 0) {
                 newTweetButton.style.marginRight = "4px";
+            } else if (window.innerWidth <= 590) {
+                newTweetButton.style.marginRight = "0";
             } else {
                 newTweetButton.style.marginRight =
                     mentions.length > 0 ? "-50px" : "-32px";
